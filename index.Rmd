@@ -1,0 +1,154 @@
+---
+title: "Sitescreening"
+author: "Samhällsanalys"
+date: "`r Sys.Date()`"
+output: html_document
+---
+:::{#header}
+<img src="logo_liggande_platta_farg.png" height="50" width="100" margin="0 auto"/>
+:::
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+ 
+Kartan Sitescreening är utvecklad åt Invest in Dalarna Agency, Region Dalarnas investeringsfrämjande funktion[^1]. Invest in Dalarna Agency återfinns hos Region Dalarna, Regional utvecklingsförvaltning och enheten näringsliv. Invest in Dalarna Agency har ett nära samarbete med Dalarnas 15 kommuner, branschkluster och regionala näringslivsfrämjare. 
+
+Syftet med kartan är att underlätta det regionala utvecklingsarbetet med att identifiera lämpliga platser för etablering av elintensiva företag. Denna kartläggning och analys bygger på framgångsrika erfarenheter från Västernorrlands High Coast Invest[^2], som i samarbete med SWECO kunde lokalisera minst en betydande etableringsplats för liknande företag. Kartan är en central del av en pågående insats att skapa en Region-Atlas för regional utveckling på Region Dalarna, en interaktiv karttjänst som omfattar geografisk information med betydelse för regionen. Projektet har Region Östergötlands Region-Atlas som en förebild.[^3].
+
+Analysen i kartan bygger på flera kriterier, där de två mest avgörande faktorerna, nämligen digitala översiktsplaner och data från regionnätsägare angående elutmatning, ännu inte är tillgängliga. Denna data är av stor betydelse då den inte bara visar var elutmatning kan äga rum utan även uttagsstorleken i megawatt. För att underlätta beslutsfattandet har varje kriterium tilldelats poäng beroende på dess relevans och avstånd till potentiella etableringsplatser för elintensiva industrier. Denna poängsättning är visuellt representerad i kartan, där färgkodningen övergår från rött till gult för att tydligt indikera platsernas lämplighet. Kartan erbjuder även användarna möjligheten att hantera och visa olika lager, samt att zooma in och ut i kartvyn.
+
+Detta projekt är i sin nuvarande form ett steg mot att effektivisera och informera beslutsfattare om de bästa möjliga platserna för elintensiva företag att etablera sig i Dalarna. Framtida steg i projektet kan omfatta ytterligare datatillgänglighet samt eventuella rekommendationer eller överväganden för att optimera processen.
+
+För att få en mer detaljerad överblick och interaktiv upplevelse av kartan, klicka på länken för att öppna kartan i helskärmsläge. Kartan i helskärm innehåller samtliga kriterier och även stoplager, dvs områden där etablering inte är möjlig; naturvård, vatten (ej strandskydd), bostadsområden och jordbruksmark.
+
+#### [Tryck här för karta i helskärm.](https://region-dalarna.github.io/Sitescreening/)
+
+
+
+[^3]: RegionAtlas Östergötlands, "Ett tittskåp för geografisk information över Östergötland" <https://experience.arcgis.com/experience/b5ebf98b1c424ad595497c6b2c2b39a8>
+
+[^1]: Invest in Dalarna agency <https://www.investindalarna.se/>
+
+[^2]: High Coast Invest <https://www.highcoastinvest.com/sites>
+
+<br>
+<details>
+
+  <summary>Kriterierna i analysen</summary>
+
+1. Elinfrastruktur: transformatorområden (stationer, ej elledningar), viktat till tre transformatorstationer på stamnätet som i framtiden kommer att uppgraderas, Repbäcken, Horndal och Tandö [^4]. (Källa: Lantmäteriet och SVK)
+
+[^4]: Svenska Kraftnät, Transmissionsnätsprojekt <https://www.svk.se/utveckling-av-kraftsystemet/transmissionsnatet/transmissionsnatsprojekt/?county=Dalarna> 
+
+2. Flygplatser: Borlänge, Mora och Sälen. (Källa: Lantmäteriet)
+
+3. Järnväg viktat till sidospår/stickspår (Källa: Lantmäteriet)
+
+4. Vägar avgränsat till statliga och kommunala vägar (Källa: NVDB)
+
+5. Stoplager: (Markyta olämplig för etablering) Jordbruksmark, bostäder och naturskyddsområden samt vatten (ej hänsyn till strandskydd).
+ 
+</details>
+<br>
+
+```{r, include=FALSE}
+# libraries
+if (!require("pacman")) install.packages("pacman")
+pacman::p_load(tidyverse, sf, sp, httr, mapview, leaflet, readxl, keyring)
+
+# För att komma förbi proxyn
+set_config(use_proxy(url = "http://mwg.ltdalarna.se", port = 9090,
+                     username = key_list(service = "auth")$username, password = key_get("auth", key_list(service = "auth")$username)))
+set_config(config(ssl_verifypeer = 0L))
+
+# avoid scientific notation
+options(scipen=999)
+```
+
+
+```{r hamta_data, include=FALSE}
+#hämta data
+
+kommun_fil <- "G:/Samhällsanalys/GIS/projekt/Invest in Dalarna/utdata/till_rmd/kommun.gpkg" #824 kb
+kommun <- st_read(kommun_fil, crs = 3006) %>% 
+  select("kom_kod" = "kommunkod",
+         "kommun" = "kommunnamn")
+
+#multikriterieanalys resultat mer än 500 p
+vectoriserad_fil <- "G:/Samhällsanalys/GIS/projekt/Invest in Dalarna/utdata/till_rmd/sitescreening.gpkg" # 5752 kb
+vectoriserad <- st_read(vectoriserad_fil, crs = 3006)
+
+#järnväg
+jarnvag_fil <- "G:/skript/henrik/GitHub/Region-Atlas/QGIS/ralstrafik.gpkg"
+jarnvag <- st_read(jarnvag_fil, crs = 3006)
+
+#naturvård
+naturvard_fil <- "G:/skript/henrik/GitHub/Region-Atlas/fran_philip/naturvardsomr.gpkg"
+naturvard <- st_read(naturvard_fil, crs = 3006)
+
+#industri
+industriomr_fil <- "G:/skript/henrik/GitHub/Region-Atlas/fran_philip/industriomr.gpkg"
+industriomr <- st_read(industriomr_fil, crs = 3006)
+
+#Elinfrastruktur
+transformatoromr_fil <- "G:/skript/henrik/GitHub/Region-Atlas/fran_philip/transformatoromr.gpkg"
+transformatoromr <- st_read(transformatoromr_fil, crs = 3006) %>% 
+  st_buffer(100)
+
+elledningar_fil <- "G:/Samhällsanalys/GIS/projekt/Invest in Dalarna/utdata/elledningar/ledningar_ellevio.gpkg" #G:\Samhällsanalys\GIS\projekt\Invest in Dalarna\utdata\elledningar
+elledningar <- st_read(elledningar_fil, crs = 3006)
+
+
+#3 speciella transformatorstationer
+repbacken_etc_fil <- "G:/Samhällsanalys/GIS/projekt/Invest in Dalarna/utdata/Repbäcken_etc.gpkg"
+transformator_vip <- st_read(repbacken_etc_fil, crs = 3006) %>%
+  st_buffer(1000)
+
+#flygplatser
+
+flygplats_fil <- "G:/Samhällsanalys/GIS/projekt/Invest in Dalarna/utdata/Flygplats.gpkg"
+
+flygplats_1 <- st_read(flygplats_fil, crs = 3006) %>%
+  mutate(rep(c("Dalaflyget", "Dalaflyget", "Scandinavian Mountains AB"))) %>%
+  mutate(rep(c("Dala Airport", "Mora/Siljan Flygplats", "Sälen/Trysil Airport")))
+
+#glimpse(flygplats_1)
+flygplats <- flygplats_1 %>%
+  rename(operator = `rep(c("Dalaflyget", "Dalaflyget", "Scandinavian Mountains AB"))`,
+         namn = `rep(c("Dala Airport", "Mora/Siljan Flygplats", "Sälen/Trysil Airport"))`)
+
+
+
+
+
+
+```
+
+```{r kartan, include=TRUE, echo=FALSE}
+#kartan
+
+#mapview(vectoriserad)
+
+skane <- colorRampPalette(c("lightyellow", 'yellow', "orange", "red", 'darkred'))
+
+#mapview(vectoriserad, homebutton = FALSE, alpha.regions = 0.6, lwd = 0.0, col.regions = skane)
+
+greys <- colorRampPalette(c("grey50", "grey87"))
+
+greens <- colorRampPalette(c("green1", "green3", ("green4")))
+
+
+mapview(kommun, alpha = TRUE, legend = FALSE, alpha.regions = 0.0, label = "kommun", hide = FALSE, homebutton = FALSE)+ 
+  mapview(vectoriserad, layer.name = "Sitescreening", zcol = "Points", homebutton = FALSE, alpha.regions = 0.8, lwd = 0.0, col.regions = skane)+
+  mapview(jarnvag, color = "grey29", lwd = 2, legend = FALSE, label = "straknamn", homebutton = FALSE, hide = TRUE)+
+  mapview(transformatoromr, label = "objekttyp", homebutton = FALSE, col.regions = c("green"), legend = FALSE, hide = TRUE)+#transformatoromr
+  mapview(industriomr, label = "objekttyp", homebutton = FALSE, alpha.regions = 0.5, col.regions = c("darkred"), legend = FALSE, hide = TRUE)+#industriomr
+  mapview(naturvard, label = "objekttyp", homebutton = FALSE, alpha.regions = 0.5, col.regions = c("darkgreen"), legend = FALSE, hide = TRUE)+##naturvard
+  mapview(elledningar, color = greens, zcol = "objekttyp", lwd = 2, legend = FALSE, label = "objekttyp", homebutton = FALSE, hide = TRUE)+
+  mapview(flygplats, col.regions = "red", color = "white", cex = 6, legend = FALSE, label = "namn", homebutton = TRUE, hide = TRUE)+
+  mapview(transformator_vip, col.regions = "green", color = "white", cex = 6, legend = FALSE, label = "objekttyp", homebutton = TRUE, hide = TRUE)
+  
+```
+

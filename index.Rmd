@@ -5,7 +5,7 @@ date: "`r Sys.Date()`"
 output: html_document
 ---
 :::{#header}
-<img src="logo_liggande_platta_farg.png" height="50" width="100" margin="0 auto"/>
+<img src="logo_liggande_platta_farg.png" height="50" width="100" margin="0 auto"/> <img src="invest_logo.png" height="75" width="150" margin="0 auto"/>
 :::
 
 ```{r setup, include=FALSE}
@@ -17,21 +17,11 @@ Kartan Sitescreening är utvecklad åt Invest in Dalarna Agency, Region Dalarnas
 
 Syftet med kartan är att underlätta det regionala utvecklingsarbetet med att identifiera lämpliga platser för etablering av elintensiva företag. Denna kartläggning och analys bygger på framgångsrika erfarenheter från Västernorrlands High Coast Invest[^2], som i samarbete med SWECO kunde lokalisera minst en betydande etableringsplats för liknande företag. Kartan är en central del av en pågående insats att skapa en Region-Atlas för regional utveckling på Region Dalarna, en interaktiv karttjänst som omfattar geografisk information med betydelse för regionen. Projektet har Region Östergötlands Region-Atlas som en förebild.[^3].
 
-Analysen i kartan bygger på flera kriterier, där de två mest avgörande faktorerna, nämligen digitala översiktsplaner och data från regionnätsägare angående elutmatning, ännu inte är tillgängliga. Denna data är av stor betydelse då den inte bara visar var elutmatning kan äga rum utan även uttagsstorleken i megawatt. För att underlätta beslutsfattandet har varje kriterium tilldelats poäng beroende på dess relevans och avstånd till potentiella etableringsplatser för elintensiva industrier. Denna poängsättning är visuellt representerad i kartan, där färgkodningen övergår från rött till gult för att tydligt indikera platsernas lämplighet. Kartan erbjuder även användarna möjligheten att hantera och visa olika lager, samt att zooma in och ut i kartvyn.
+Analysen i kartan bygger på flera kriterier, där de två mest avgörande faktorerna, nämligen digitala översiktsplaner och data från regionnätsägare angående elutmatning, ännu inte är tillgängliga. Denna data är av stor betydelse då den inte bara visar var elutmatning kan äga rum utan även uttagsstorleken i megawatt. För att underlätta beslutsfattandet har varje kriterium tilldelats poäng beroende på dess relevans och avstånd till potentiella etableringsplatser för elintensiva industrier. Högre poäng innebär en plats mer lämplig än en plats med låga poäng eller utan poäng. Denna poängsättning är visuellt representerad i kartan, där färgkodningen övergår från höga poäng i rött till lägre poäng i gult för att indikera platsernas lämplighet. Kartan erbjuder även användarna möjligheten att hantera och visa olika lager, samt att zooma in och ut i kartvyn.
 
 Detta projekt är i sin nuvarande form ett steg mot att effektivisera och informera beslutsfattare om de bästa möjliga platserna för elintensiva företag att etablera sig i Dalarna. Framtida steg i projektet kan omfatta ytterligare datatillgänglighet samt eventuella rekommendationer eller överväganden för att optimera processen.
 
-För att få en mer detaljerad överblick och interaktiv upplevelse av kartan, klicka på länken för att öppna kartan i helskärmsläge. Kartan i helskärm innehåller samtliga kriterier och även stoplager, dvs områden där etablering inte är möjlig; naturvård, vatten (ej strandskydd), bostadsområden och jordbruksmark.
-
-#### [Tryck här för karta i helskärm.](https://region-dalarna.github.io/Sitescreening/)
-
-
-
-[^3]: RegionAtlas Östergötlands, "Ett tittskåp för geografisk information över Östergötland" <https://experience.arcgis.com/experience/b5ebf98b1c424ad595497c6b2c2b39a8>
-
-[^1]: Invest in Dalarna agency <https://www.investindalarna.se/>
-
-[^2]: High Coast Invest <https://www.highcoastinvest.com/sites>
+För att få en mer detaljerad överblick och interaktiv upplevelse av kartan, klicka<a href="https://region-dalarna.github.io/Sitescreening/" >här på länken för att öppna kartan i helskärmsläge</a>. Kartan i helskärm innehåller samtliga kriterier och även stoplager, dvs områden där etablering av industri inte är möjlig på grund av naturvård, vatten (ej inklusive strandskydd), bostadsområden och jordbruksmark.
 
 <br>
 <details>
@@ -39,8 +29,6 @@ För att få en mer detaljerad överblick och interaktiv upplevelse av kartan, k
   <summary>Kriterierna i analysen</summary>
 
 1. Elinfrastruktur: transformatorområden (stationer, ej elledningar), viktat till tre transformatorstationer på stamnätet som i framtiden kommer att uppgraderas, Repbäcken, Horndal och Tandö [^4]. (Källa: Lantmäteriet och SVK)
-
-[^4]: Svenska Kraftnät, Transmissionsnätsprojekt <https://www.svk.se/utveckling-av-kraftsystemet/transmissionsnatet/transmissionsnatsprojekt/?county=Dalarna> 
 
 2. Flygplatser: Borlänge, Mora och Sälen. (Källa: Lantmäteriet)
 
@@ -53,6 +41,14 @@ För att få en mer detaljerad överblick och interaktiv upplevelse av kartan, k
 </details>
 <br>
 
+[^1]: Invest in Dalarna agency <https://www.investindalarna.se/>
+[^2]: High Coast Invest <https://www.highcoastinvest.com/sites>
+[^3]: RegionAtlas Östergötlands, "Ett tittskåp för geografisk information över Östergötland" <https://experience.arcgis.com/experience/b5ebf98b1c424ad595497c6b2c2b39a8>
+[^4]: Svenska Kraftnät, Transmissionsnätsprojekt <https://www.svk.se/utveckling-av-kraftsystemet/transmissionsnatet/transmissionsnatsprojekt/?county=Dalarna>  
+[^5]:Posit team. (2022). RStudio: Integrated Development Environment for R. Posit Software, PBC, Boston, MA. <http://www.posit.co/>
+[^6]:OpenAI. (2023). ChatGPT (Sep 25 version) [Large language model]. <https://chat.openai.com/chat>
+[^7]:QGIS Development Team. (2021). QGIS geographic information system. QGIS Association.
+ <https://www.qgis.org>
 ```{r, include=FALSE}
 # libraries
 if (!require("pacman")) install.packages("pacman")
@@ -152,3 +148,4 @@ mapview(kommun, alpha = TRUE, legend = FALSE, alpha.regions = 0.0, label = "komm
   
 ```
 
+Karta och text är skapat med R i RStudio [^5]. Texten är bearbetad av Chatgpt[^6]. Multikriterieanalysen är gjord med QGIS[^7]. Webbsidan är publicerad på internet med Github pages (<https://pages.github.com/>) från Region Dalarnas konto (<https://github.com/Region-Dalarna>).

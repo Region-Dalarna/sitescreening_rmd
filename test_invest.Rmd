@@ -1,0 +1,31 @@
+---
+title: "Sitescreening"
+author: "Samhällsanalys"
+date: "`r Sys.Date()`"
+output: html_document
+---
+:::{#header}
+<img src="logo_liggande_platta_farg.png" height="50" width="100" margin="0 auto"/> 
+:::
+
+<a href="https://region-dalarna.github.io/Sitescreening/" >Tryck här för karta i helskärm</a>
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+
+
+  
+```
+:::{#header}
+<img src="adt_tunga_fordon.png" height="150" width="250" margin="0 auto"/> 
+:::
+
+#### [Tryck här för karta i helskärm.](https://region-dalarna.github.io/Sitescreening/)
+
+
+Karta och text är skapat med R i RStudio [^5]. Texten är bearbetad av Chatgpt[^6]. Multikriterieanalysen är gjord med QGIS[^7]. Websidan är publicerat på internet med Github pages (<https://pages.github.com/>) från Region Dalarnas konto (<https://github.com/Region-Dalarna>).
+ 
+[^5]:Posit team. (2022). RStudio: Integrated Development Environment for R. Posit Software, PBC, Boston, MA. <http://www.posit.co/>
+[^6]:OpenAI. (2023). ChatGPT (Sep 25 version) [Large language model]. <https://chat.openai.com/chat>
+[^7]:QGIS Development Team. (2021). QGIS geographic information system. QGIS Association.
+ <https://www.qgis.org>
